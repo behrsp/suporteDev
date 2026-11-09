@@ -143,3 +143,4 @@ export class ParametrosController {
     return { deleted: true, id: Number(id) };
   }
 }
+

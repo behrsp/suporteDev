@@ -34,3 +34,4 @@ export interface ProtheusHelp {
 
 export type ActiveTab = 'todos' | 'tabelas' | 'parametros' | 'helps';
 export type FormCategory = 'tabelas' | 'parametros' | 'helps';
+

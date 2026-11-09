@@ -16,3 +16,4 @@ startLocalServer().catch((err) => {
   console.error('Erro ao iniciar servidor NestJS:', err);
   process.exit(1);
 });
+

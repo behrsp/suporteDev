@@ -118,3 +118,4 @@ export class TabelasController {
     return { deleted: true, id: Number(id) };
   }
 }
+

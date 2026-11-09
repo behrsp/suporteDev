@@ -42,3 +42,4 @@ export async function processDeviceImage(file: File, maxWidth = 1400, quality = 
     reader.readAsDataURL(file);
   });
 }
+

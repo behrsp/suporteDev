@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const DEFAULT_NEON_URL =
-  'postgresql://neondb_owner:npg_FufWO8Dp6xwi@ep-royal-union-b6y2ioze-pooler.c-2.sa-east-1.aws.neon.tech/neondb?sslmode=require';
+  'postgresql://neondb_owner:npg_FufWO8Dp6xwi@ep-royal-union-b6y2ioze-pooler.c-2.sa-east-1.aws.neon.tech/neondb';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -15,16 +15,18 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private initPromise: Promise<void> | null = null;
 
   constructor() {
-    const rawUrl = process.env.DATABASE_URL || DEFAULT_NEON_URL;
-    // Clean channel_binding param if pg driver has issues with it on some Node environments while keeping sslmode=require
-    const cleanUrl = rawUrl.replace(/&?channel_binding=require/g, '');
+    const rawUrl = (process.env.DATABASE_URL || DEFAULT_NEON_URL)
+      .trim()
+      .replace(/^["']|["']$/g, '');
+    // Remove query parameters that conflict with explicit pg ssl config
+    const cleanUrl = rawUrl.split('?')[0];
 
     this.pool = new Pool({
       connectionString: cleanUrl,
       ssl: {
         rejectUnauthorized: false,
       },
-      max: 10,
+      max: 5,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 15000,
     });
@@ -97,7 +99,6 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       );
     `);
 
-    // Seed initial records only if tables are completely empty
     const tabelasCount = await this.pool.query('SELECT COUNT(*)::int AS count FROM protheus_tabelas');
     if (tabelasCount.rows[0].count === 0) {
       await this.pool.query(`

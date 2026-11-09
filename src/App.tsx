@@ -97,7 +97,12 @@ export function App() {
     try {
       const res = await fetch('/api/overview');
       if (!res.ok) {
-        throw new Error(`Erro ao carregar dados (${res.status})`);
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(
+          errBody?.message
+            ? `Erro ao carregar dados: ${errBody.message}`
+            : `Erro ao carregar dados (${res.status})`,
+        );
       }
       const data = await res.json();
       setTabelas(data.tabelas || []);
@@ -1320,3 +1325,4 @@ export function App() {
     </div>
   );
 }
+
